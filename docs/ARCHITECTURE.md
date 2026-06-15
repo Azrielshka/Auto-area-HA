@@ -1,12 +1,14 @@
 # Архитектура: этапы 1–2 (живая отправка + идемпотентность)
 
+> Пошаговое описание работы модулей (как именно крутится pipeline) — в [LOGIC.md](LOGIC.md).
+
 ## Решения
 - **Где запускается:** внешний скрипт с рабочей машины, подключается к Home Assistant по **WebSocket API**. Не внутри HA (тяжёлые зависимости `pandas`/`pyarrow` остаются вне HA; создание Area — WS-команда, а не сервис, поэтому запуск «внутри» не даёт выгоды).
 - **Dry-run:** read-only. Подключается и читает существующие Areas (`config/area_registry/list`), показывает дифф (что создалось бы / что уже есть), но **ничего не пишет**. Остаётся режимом по умолчанию.
 - **Идемпотентность:** ключ сравнения — `name` (уникален за счёт номера-префикса). Если имя уже есть — SKIP.
 - **Расхождение алиасов:** если имя совпало, но алиасы отличаются — просто SKIP (ручные правки в HA не затираем).
 
-## Структура модулей
+## Структура проекта
 ```
 Auto-area-HA/
 ├── areacreator/
@@ -16,10 +18,15 @@ Auto-area-HA/
 │   ├── ha_client.py     # async WS-клиент: connect, auth, list_areas, create_area
 │   └── runner.py        # оркестрация: transform -> connect -> list -> diff -> (create|preview) -> сводка
 ├── AreaScript.py        # тонкий entry-point: argparse -> runner
-└── normalized/...
+├── docs/                # документация: ARCHITECTURE.md, LOGIC.md, RULES.md, TZ.md
+├── normalized/...       # входные данные (spaces.parquet)
+├── .env.example         # шаблон секретов (реальный .env локально, в .gitignore)
+├── requirements.txt
+└── changelog.txt
 ```
 
-## Зависимости (добавить в requirements.txt)
+## Зависимости (в requirements.txt)
+- `pandas`, `pyarrow` — чтение parquet
 - `websockets` — асинхронный WS-клиент (упомянут в RULES.md)
 - `python-dotenv` — загрузка `.env`
 
@@ -75,4 +82,3 @@ python AreaScript.py --file <path>   # путь к parquet (default: normalized/
 
 ## Вне рамок проекта совсем
 - Устройства/сущности (`device_rows.parquet`) — обрабатываются в отдельном проекте, здесь не трогаем.
-```

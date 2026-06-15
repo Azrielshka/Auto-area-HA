@@ -1,7 +1,0 @@
-# Пример конфигурации. Скопируйте в config.yaml и заполните.
-# Реальный config.yaml в .gitignore — секреты в репозиторий не попадают.
-
-home_assistant:
-  base_url: "http://homeassistant.local:8123"
-  # Токен предпочтительно держать в .env (переменная HA_TOKEN), а не здесь.
-  token: ""
