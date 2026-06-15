@@ -1,2 +1,3 @@
 Журнал изменений (Changelog)
 [v1.0.0] - [2026-05-27] - [Добавлено] Базовый скрипт для чтения spaces.parquet, функция форматирования имен через словарь и генерация JSON-запросов в режиме dry-run.
+[v1.1.0] - [2026-06-15] - [Добавлено] requirements.txt (pandas, pyarrow); заготовки .env.example/config.yaml.example; .gitignore. [Изменено] Путь по умолчанию -> normalized/spaces.parquet; флаг --dry-run заменён на --live (dry-run остаётся безопасным дефолтом). [Исправлено] Невозможно было выключить dry-run. [Добавлено] Словарь дополнен лекционными кабинетами (lekts_kabin/lekts_kabinet/lekts_kabinet_med); WARNING при отсутствии slug в словаре.

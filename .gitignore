@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Секреты — реальные файлы не коммитим (в репозитории только *.example)
+.env
+config.yaml
+
+# Системное / IDE
+.DS_Store
+.idea/
+.vscode/

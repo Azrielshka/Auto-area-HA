@@ -18,6 +18,9 @@ TRANSLATION_DICT = {
     "lestnitsa": "Лестница",
     "koridor": "Коридор",
     "lekts": "Лекционная",
+    "lekts_kabin": "Лекционный кабинет",
+    "lekts_kabinet": "Лекционный кабинет",
+    "lekts_kabinet_med": "Лекционный кабинет (мед.)",
     "s_u_zhenskii": "Санузел женский",
     "s_u_muzhskoi": "Санузел мужской",
     "obshchii": "Общий"
@@ -33,11 +36,19 @@ def format_room_name(slug: str) -> str:
     
     if len(parts) == 2:
         prefix, rest = parts
-        # Ищем перевод в словаре. Если нет - просто делаем первую букву заглавной
-        ru_name = TRANSLATION_DICT.get(rest, rest.replace('_', ' ').capitalize())
+        # Ищем перевод в словаре. Если нет - WARNING + фоллбэк (капитализация транслита)
+        if rest in TRANSLATION_DICT:
+            ru_name = TRANSLATION_DICT[rest]
+        else:
+            ru_name = rest.replace('_', ' ').capitalize()
+            logging.warning(
+                f"Тип помещения '{rest}' (slug '{slug}') не найден в TRANSLATION_DICT — "
+                f"использован фоллбэк '{ru_name}'. Добавьте запись в словарь для корректного имени."
+            )
         return f"{prefix}_{ru_name}"
-    
+
     # Если подчеркиваний нет, просто капитализируем
+    logging.warning(f"Slug '{slug}' без префикса '_' — использована фоллбэк-капитализация.")
     return slug.capitalize()
 
 def main(file_path: str, dry_run: bool):
@@ -79,15 +90,20 @@ def main(file_path: str, dry_run: bool):
                 f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
             )
         else:
-            # Здесь в будущем будет отправка через WebSocket
-            pass
+            # Реальная отправка через WebSocket API — задача следующего этапа (бэклог).
+            logging.error(
+                "Режим --live ещё не реализован: отправка в Home Assistant отложена в бэклог. "
+                "Запустите без --live для dry-run."
+            )
+            return
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="HA Area Creator")
-    parser.add_argument('--file', type=str, default='spaces.parquet', help='Путь к файлу parquet')
-    # Флаг --dry-run включен по умолчанию для безопасности при тестировании
-    parser.add_argument('--dry-run', action='store_true', default=True, help='Активировать режим холостого прогона')
-    
+    parser.add_argument('--file', type=str, default='normalized/spaces.parquet', help='Путь к файлу parquet')
+    # Dry-run — безопасный режим по умолчанию (только вывод JSON, без отправки в HA).
+    # Реальная отправка включается явным флагом --live (будет реализована на следующем этапе).
+    parser.add_argument('--live', action='store_true', help='Снять dry-run и реально отправлять запросы в Home Assistant')
+
     args = parser.parse_args()
-    
-    main(file_path=args.file, dry_run=args.dry_run)
+
+    main(file_path=args.file, dry_run=not args.live)
