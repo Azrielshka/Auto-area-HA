@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-05-27T12:56:21.738311+00:00",
+  "source_file": "C:/Users/Andrey/PycharmProjects/ha-college-lighting/data/example.xlsx",
+  "output_files": {
+    "device_rows": "C:\\Users\\Andrey\\PycharmProjects\\ha-college-lighting\\data\\normalized\\device_rows.parquet",
+    "spaces": "C:\\Users\\Andrey\\PycharmProjects\\ha-college-lighting\\data\\normalized\\spaces.parquet"
+  },
+  "stats": {
+    "excel_rows": 117,
+    "device_rows": 117,
+    "spaces": 12
+  },
+  "columns": {
+    "device_rows": [
+      "row_id",
+      "space_raw",
+      "space",
+      "room_slug",
+      "floor",
+      "card_type",
+      "group_id",
+      "ms_sensor_id",
+      "lamp_id",
+      "dali_bus",
+      "kp_id",
+      "is_group_start"
+    ],
+    "spaces": [
+      "space",
+      "room_slug",
+      "floor",
+      "card_type",
+      "groups",
+      "groups_count",
+      "general_light_entity",
+      "ms_sensors_by_group",
+      "ms_sensors_unique",
+      "warnings"
+    ]
+  },
+  "warnings_summary": {
+    "spaces_without_card_type": [],
+    "spaces_with_unknown_card_type": [],
+    "spaces_with_duplicate_ms_sensor": []
+  },
+  "notes": {
+    "zone_light_rule": "ZONE_LIGHT_i = 'light.' + groups[i-1]",
+    "ms_sensor_rule": "MS sensor taken from column 'Датчик' only on group start rows (where 'Группа' is filled). Duplicates are removed (set to null) in ms_sensors_by_group.",
+    "general_light_rule": "general_light_entity = 'light.' + room_slug + '_obshchii'"
+  }
+}
